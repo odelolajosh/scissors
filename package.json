@@ -1,0 +1,17 @@
+{
+  "name": "scissors",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "client:dev": "npm run dev --workspace=apps/client",
+    "server:dev": "npm run dev --workspace=apps/server"
+  },
+  "keywords": [],
+  "author": "Joshua Odelola",
+  "license": "ISC",
+  "workspaces": [
+    "apps/*"
+  ]
+}

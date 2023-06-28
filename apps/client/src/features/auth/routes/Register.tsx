@@ -44,16 +44,16 @@ export default function Register() {
         <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           <div className="w-full min-h-96 rounded-2xl px-4 py-12">
             <form onSubmit={handleSubmit}>
-              <h1 className="max-w-sm text-4xl font-bold mx-auto text-center">
+              <h1 className="max-w-sm mb-8 text-4xl font-bold mx-auto text-center">
                 Register.
               </h1>
-              <div className="max-w-sm mx-auto mt-8 flex flex-col gap-8">
+              <div className="max-w-sm mx-auto mt-4 flex flex-col gap-4">
                 <div>
-                  <Input type="email" placeholder="rocker@mail.com" label="Email" name="email" onChange={onChange} />
+                  <Input type="email" placeholder="you@mail.com" label="Email" name="email" onChange={onChange} />
                   {err?.for === 'email' && <p className="text-red-500 text-sm mt-1">{err.message}</p>}
                 </div>
                 <Input type="password" placeholder="••••••••" label="Password" name="password" onChange={onChange} />
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-10">
                   <Button variant="solid" className="w-full" type="submit" loading={loading}>Let's go</Button>
                 </div>
                 <div className="flex justify-center">

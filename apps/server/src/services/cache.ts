@@ -6,7 +6,7 @@ dotenv.config();
 
 /** Cache Client Class */
 class CacheClient {
-  private client: redis.RedisClientType;
+  client: redis.RedisClientType;
 
   constructor() {
     this.client = createClient({ url: getEnv('REDIS_URI') });

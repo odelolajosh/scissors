@@ -12,7 +12,7 @@ export const DeleteSL: React.FC<DeleteSLProps> = ({ onClose, sl }) => {
 
   const onDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    await deleteSL.mutateAsync({ sid: sl._id })
+    await deleteSL.mutateAsync({ name: sl.name })
     onClose()
   }
 

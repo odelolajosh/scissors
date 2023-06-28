@@ -7,6 +7,7 @@ interface SLDefinition extends Document {
   url: string;
   shortLink: string;
   isCustom: boolean;
+  visits?: number;
   qrUrl?: string;
 }
 
@@ -17,6 +18,7 @@ const SLSchema = new Schema<SLDefinition, Model<SLDefinition>>(
     url: { type: String, required: true, unique: true },
     shortLink: { type: String, required: true, unique: true },
     isCustom: { type: Boolean, default: false },
+    visits: { type: Number, default: 0 },
     qrUrl: { type: String }
   },
   { timestamps: true }

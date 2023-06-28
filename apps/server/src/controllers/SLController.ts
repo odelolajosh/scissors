@@ -31,7 +31,7 @@ export default class SLController {
     const sl = await SL.create({ userId, name, url, shortLink, isCustom: !!customDomain });
 
     // Save to cache
-    await Cache.set(`sl_${shortLink}`, url);
+    await Cache.set(`sl_${shortLink}`, sl.url, 60 * 60 * 30); // expires in 30 mins
 
     res.status(200).json({
       status: 'success',
@@ -107,7 +107,10 @@ export default class SLController {
   static delete = handleAsync(async (req, res) => {
     const { name } = req.params;
     const userId = req.user._id;
+    const shortLink = `${req.protocol}://${req.get('host')}/${name}`;
     await SL.findOneAndDelete({ name, userId });
+    await Location.deleteMany({ slName: name });
+    await Cache.del(`sl_${shortLink}`);
     return res.status(200).json({
       status: 'success',
       message: 'All done!'
@@ -124,13 +127,13 @@ export default class SLController {
   });
 
   static redirectSL = handleAsync(async (req, res) => {
-    const name = req.params.name.trim().toLowerCase();
+    const name = req.params.name.trim();
     const shortLink = `${req.protocol}://${req.get('host')}/${name}`;
 
     const cachedUrl = await Cache.get(`sl_${shortLink}`);
     if (cachedUrl) {
-      // Well, this kinda contradicts the purpose of caching; we're still hitting the db
-      await SLController._visit(cachedUrl, req);
+      // increment visit in cache
+      // await Cache.client.hIncrBy(`sl_${shortLink}_visits`, req.ip, 1);
       return res.redirect(cachedUrl);
     }
 
@@ -139,24 +142,53 @@ export default class SLController {
       throw new AppError('Link not found', 404);
     }
 
-    await SLController._visit(sl._id, req);
+    await SLController._visit(name, req);
+    sl.visits += 1;
     await sl.save();
+
+    await Cache.set(`sl_${shortLink}`, sl.url, 60 * 60 * 30); // expires in 30 mins
     res.redirect(sl.url);
   });
 
   static getStats = handleAsync(async (req, res) => {
     const userId = req.user._id;
-    
+
+    const slNames = await SL.find({ userId }).select('name');
+    const slNamesArr = slNames.map(sl => sl.name);
+
     // Get total visits
     const totalVisits = await Location.aggregate([
-      { $match: { userId } },
+      { $match: { slName: { $in: slNamesArr } } },
       { $group: { _id: null, total: { $sum: "$visits" } } }
     ]);
 
-    // Group by slId
+    // Group locations by slName, include location data
     const visits = await Location.aggregate([
-      { $match: { userId } },
-      { $group: { _id: "$slId", total: { $sum: "$visits" } } }
+      { $match: { slName: { $in: slNamesArr } } },
+      { $group: { _id: "$slName", total: { $sum: "$visits" }, locations: { $push: "$$ROOT" } } }
+    ]);
+
+    return res.status(200).json({
+      status: 'success',
+      totalVisits: totalVisits[0]?.total || 0,
+      visits
+    });
+  });
+
+  static getOneStat = handleAsync(async (req, res) => {
+    const userId = req.user._id;
+    const { name: slName } = req.params;
+
+    // Get total visits
+    const totalVisits = await Location.aggregate([
+      { $match: { userId, slName } },
+      { $group: { _id: null, total: { $sum: "$visits" } } }
+    ]);
+
+    // Group by slName
+    const visits = await Location.aggregate([
+      { $match: { userId, slName } },
+      { $group: { _id: "$slName", total: { $sum: "$visits" } } }
     ]);
 
     return res.status(200).json({
@@ -171,11 +203,11 @@ export default class SLController {
     return sl.length === 0;
   }
 
-  private static _visit = async (slId: string, req: Request) => {
+  private static _visit = async (slName: string, req: Request) => {
     const ip = req.ip, browser = req.headers['user-agent'];
-    const location = await Location.findOne({ slId, ip, browser });
+    const location = await Location.findOne({ slName, ip, browser });
     if (!location) {
-      await Location.create({ slId, ip, browser });
+      await Location.create({ slName, ip, browser });
     } else {
       location.visits += 1;
       await location.save();

@@ -2,17 +2,19 @@ import { Schema, model, Model, Document } from 'mongoose';
 
 interface LocationDefinition extends Document {
   ip: string;
-  browser: string;
-  slId: Schema.Types.ObjectId;
+  browser?: string;
+  slName: string;
   visits: number;
+  userId?: Schema.Types.ObjectId;
 }
 
 const LocationSchema = new Schema<LocationDefinition, Model<LocationDefinition>>(
   {
     ip: { type: String, required: true },
-    browser: { type: String, required: true },
-    slId: { type: Schema.Types.ObjectId, ref: 'SL', required: true },
-    visits: { type: Number, default: 1 }
+    browser: { type: String },
+    slName: { type: String, required: true },
+    visits: { type: Number, default: 1 },
+    userId: { type: Schema.Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }
 );

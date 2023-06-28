@@ -1,9 +1,10 @@
 import { refreshAuth } from '@/features/auth';
 import storage from '@/utils/storage';
 import Axios from 'axios';
+import { API_URL } from './config';
 
 export const axios = Axios.create({
-  baseURL: 'http://localhost:5001/api/v0',
+  baseURL: `${API_URL}/api/v0`,
 });
 
 axios.interceptors.request.use((config) => {

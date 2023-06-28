@@ -13,11 +13,16 @@ router.delete('/auth/logout', requireAccess, AuthController.logout);
 router.post('/auth/refresh', requireRefresh, AuthController.refresh);
 
 router.get('/sl', requireAccess, SLController.getAll);
-router.get('/sl/:id', requireAccess, SLController.getOne);
+router.get('/sl/:name', requireAccess, SLController.getOne);
 router.post('/sl', requireAccess, SLController.create);
-router.put('/sl/:id', requireAccess, SLController.update);
-router.delete('/sl/:id', requireAccess, SLController.delete);
+router.put('/sl/:name', requireAccess, SLController.update);
+router.delete('/sl/:name', requireAccess, SLController.delete);
 router.get('/sl/check/:name', requireAccess, SLController.checkNameAvailability);
+// router.get('/sl/qr/:name', requireAccess, SLController.getQR);
+// router.get('/sl/qr/:name/:size', requireAccess, SLController.getQR);
+
+router.get('/stats', requireAccess, SLController.getStats);
+router.get('/stats/:name', requireAccess, SLController.getOneStat);
 
 router.get('/me', requireAccess, UserController.me);
 

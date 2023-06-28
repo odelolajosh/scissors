@@ -22,8 +22,11 @@ const Input: React.FC<InputProps> = ({ label, onTextChange, onChange, className,
 
   const inputClasses = cn(
     "px-4 py-2 mt-2 bg-neutral-100 dark:bg-neutral-800 rounded-md",
-    "outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900",
-    inputClassName
+    "outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-neutral-100 dark:focus:ring-offset-neutral-900 border border-transparent",
+    inputClassName,
+    {
+      "border-neutral-200 dark:border-neutral-700": props.disabled,
+    }
   )
 
   return (

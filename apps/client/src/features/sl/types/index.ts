@@ -8,7 +8,7 @@ export type SL = {
   createdAt: string;
   updatedAt: string;
   userId: string;
-  clicks: number;
+  visits: number;
 }
 
 export type GetSLsResponse = {

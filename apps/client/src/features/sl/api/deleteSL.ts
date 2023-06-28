@@ -3,11 +3,11 @@ import { useMutation } from "@tanstack/react-query"
 import { MutationConfig, queryClient } from "@/lib/react-query";
 
 export type DeleteSlDTO = {
-  sid: string;
+  name: string;
 }
 
-const deleteSL = async ({ sid }: DeleteSlDTO) => {
-  await axios.delete('/sl/' + sid) as any;
+const deleteSL = async ({ name }: DeleteSlDTO) => {
+  await axios.delete('/sl/' + name) as any;
 }
 
 type useDeleteSLOptions = {

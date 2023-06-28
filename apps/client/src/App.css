@@ -8,11 +8,13 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #06b6d4);
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+
+.logo img {
+  filter: invert(66%) sepia(30%) saturate(7064%) hue-rotate(149deg) brightness(96%) contrast(95%);
 }
 
 @keyframes logo-spin {
@@ -41,7 +43,7 @@
 .br-spinner {
   width: 30px;
   height: 30px;
-  border: 5px solid #FFF;
+  border: 2px solid #FFF;
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;

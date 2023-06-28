@@ -36,12 +36,13 @@ export const useUniqueNameQuery = ({ config, name }: UseUniqueNameOptions) =>{
 }
 
 export type CreateSlDTO = {
-  name: string;
+  name?: string;
   url: string;
+  customDomain?: string;
 }
 
-const createSL = async ({ name, url }: CreateSlDTO): Promise<SL> => {
-  const response = await axios.post('/sl', { name, url }) as any;
+const createSL = async ({ name, url, customDomain }: CreateSlDTO): Promise<SL> => {
+  const response = await axios.post('/sl', { name, url, customDomain }) as any;
   return response.sl;
 }
 

@@ -1,7 +1,7 @@
 import { Schema, model, Model, Document } from 'mongoose';
 
 // Short Link Definition
-interface SLDefinition extends Document {
+export interface SLDefinition extends Document {
   userId: Schema.Types.ObjectId;
   name: string;
   url: string;

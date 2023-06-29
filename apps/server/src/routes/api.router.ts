@@ -18,8 +18,7 @@ router.post('/sl', requireAccess, SLController.create);
 router.put('/sl/:name', requireAccess, SLController.update);
 router.delete('/sl/:name', requireAccess, SLController.delete);
 router.get('/sl/check/:name', requireAccess, SLController.checkNameAvailability);
-// router.get('/sl/qr/:name', requireAccess, SLController.getQR);
-// router.get('/sl/qr/:name/:size', requireAccess, SLController.getQR);
+router.get('/sl/qr/:name', requireAccess, SLController.getQR);
 
 router.get('/stats', requireAccess, SLController.getStats);
 router.get('/stats/:name', requireAccess, SLController.getOneStat);

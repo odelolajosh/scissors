@@ -1,10 +1,12 @@
 import { Request } from "express";
 import AppError from "../errors/appError";
 import Location from "../models/Location";
-import SL from "../models/SL";
+import SL, { SLDefinition } from "../models/SL";
 import Cache from "../services/cache";
 import { isValidUrl } from "../utils";
 import handleAsync from "../utils/handleAsync";
+import { generateQrCode } from "../services/qrCode";
+import cloudinary from "../services/cloudinary";
 
 export default class SLController {
   /** create a post */
@@ -110,6 +112,7 @@ export default class SLController {
     const shortLink = `${req.protocol}://${req.get('host')}/${name}`;
     await SL.findOneAndDelete({ name, userId });
     await Location.deleteMany({ slName: name });
+    await cloudinary.uploader.destroy(`scissors/qr/${name}`)
     await Cache.del(`sl_${shortLink}`);
     return res.status(200).json({
       status: 'success',
@@ -217,6 +220,31 @@ export default class SLController {
     });
   });
 
+  static getQR = handleAsync(async (req, res) => {
+    const userId = req.user._id;
+    const { name } = req.params;
+
+    const sl = await SL.findOne({ name, userId })
+    if (!sl) {
+      throw new AppError("Link not found", 404);
+    }
+
+    if (!sl.qrUrl) {
+      const qrUrl = await SLController._getQRLink(sl.shortLink);
+      if (!qrUrl) {
+        throw new AppError("Something went wrong", 400);
+      }
+
+      sl.qrUrl = qrUrl;
+      await sl.save();
+    }
+
+    return res.status(200).json({
+      status: "success",
+      sl
+    })
+  })
+
   private static _isNameAvailable = async (name: string) => {
     const sl = await SL.find({ name });
     return sl.length === 0;
@@ -225,5 +253,17 @@ export default class SLController {
   private static _visit = async (slName: string, req: Request) => {
     const ip = req.ip, browser = req.headers['user-agent'];
     await Location.create({ slName, ip, browser });
+  }
+
+  private static _getQRLink = async (link: string) => {
+    const name = link.split("/").slice(-1)[0]
+    const dataUri = await generateQrCode(link)
+    if (!dataUri) return null
+
+    const result = await cloudinary.uploader.upload(dataUri, {
+      folder: "scissors/qr",
+      public_id: name
+    })
+    return result.secure_url
   }
 }

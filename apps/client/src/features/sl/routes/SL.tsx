@@ -6,12 +6,14 @@ import { Clipboard } from "@/components/common/Clipboard"
 import Button from "@/components/ui/Button"
 import { Transition } from "@headlessui/react"
 import { SLStat } from "../components"
+import { useQr } from "../api/getQr"
 
 
 export const SL = () => {
   // Get SL name from params
   const { name } = useParams()
   const query = useSL({ name })
+  const qrMutation = useQr({ name })
 
   return (
     <div className="py-10">
@@ -68,21 +70,23 @@ export const SL = () => {
                 </span>
                 <span className="ml-2">Edit configuration</span>
               </Button>
-              {!query.data?.sl?.qr && <Button className="!bg-neutral-100 hover:!bg-neutral-200 dark:!bg-neutral-800 dark:hover:!bg-neutral-800 !text-black dark:!text-white flex">
-                <span>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
-                  </svg>
-                </span>
-                <span className="ml-2">Get a QR</span>
-              </Button>}
+              {!query.data?.sl?.qrUrl && (
+                <Button className="!bg-neutral-100 hover:!bg-neutral-200 dark:!bg-neutral-800 dark:hover:!bg-neutral-800 !text-black dark:!text-white flex" loading={qrMutation.isLoading} onClick={() => qrMutation.mutate("Omo!")}>
+                  <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+                    </svg>
+                  </span>
+                  <span className="ml-2">Get a QR</span>
+                </Button>
+                )}
             </div>
           </div>
-          {query.data?.sl?.qr && (
+          {query.data?.sl?.qrUrl && (
             <div>
-              <div className="bg-neutral-100 dark:bg-neutral-700 h-56 w-56 h-24 w-24">
-                <img src={query.data?.sl?.qr} alt="qr" />
+              <div className="bg-neutral-100 dark:bg-neutral-700 h-48 w-48">
+                <img src={query.data?.sl?.qrUrl} alt="qr" className="w-full h-full" />
               </div>
             </div>
           )}

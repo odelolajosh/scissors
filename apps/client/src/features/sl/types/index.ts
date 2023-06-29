@@ -9,7 +9,7 @@ export type SL = {
   updatedAt: string;
   userId: string;
   visits: number;
-  qr?: string;
+  qrUrl?: string;
 }
 
 export type GetSLsResponse = {

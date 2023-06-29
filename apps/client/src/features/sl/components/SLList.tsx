@@ -97,7 +97,7 @@ export const SLList: React.FC<TokenListProps> = ({ onCreate, onDelete }) => {
                       <Clipboard text={sl.shortLink} />
                     </span>
                   </td>
-                  <td className={tdClasses}>{sl.url}</td>
+                  <td className={`${tdClasses} truncate max-w-[10rem]`}>{sl.url}</td>
                   <td className={tdClasses}>{sl.visits}</td>
                   <td className={tdClasses}>{new Date(sl.createdAt).toLocaleDateString()}</td>
                   <td className={`${tdClasses} flex gap-1`}>

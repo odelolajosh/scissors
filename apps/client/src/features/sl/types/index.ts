@@ -9,6 +9,7 @@ export type SL = {
   updatedAt: string;
   userId: string;
   visits: number;
+  qr?: string;
 }
 
 export type GetSLsResponse = {
@@ -17,6 +18,20 @@ export type GetSLsResponse = {
   page: number;
 }
 
+export type GetSLResponse = {
+  sl: SL;
+}
+
 export type GetNameUniquenessResponse = {
   available: boolean;
+}
+
+export type GetStatResponse = {
+  activities: {
+    timeline: {
+      date: string;
+      visits: number;
+    }[],
+    ip: string;
+  }[]
 }

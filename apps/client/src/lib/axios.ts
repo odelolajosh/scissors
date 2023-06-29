@@ -21,13 +21,13 @@ const interceptAxios = () => {
   const interceptor = axios.interceptors.response.use(
     (response) => response.data,
     (error) => {
-      if (error.response.status !== 401) {
+      if (error.response?.status !== 401) {
+        console.log("here")
         return Promise.reject(error);
       }
 
       axios.interceptors.response.eject(interceptor);
-      
-      console.log('Refreshing ...')
+  
       return refreshAuth({ refresh: storage.getToken('refresh') })
         .then(async (response) => {
           storage.setToken(response.data.access);

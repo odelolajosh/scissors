@@ -4,7 +4,6 @@ interface LocationDefinition extends Document {
   ip: string;
   browser?: string;
   slName: string;
-  visits: number;
   userId?: Schema.Types.ObjectId;
 }
 
@@ -13,7 +12,6 @@ const LocationSchema = new Schema<LocationDefinition, Model<LocationDefinition>>
     ip: { type: String, required: true },
     browser: { type: String },
     slName: { type: String, required: true },
-    visits: { type: Number, default: 1 },
     userId: { type: Schema.Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }

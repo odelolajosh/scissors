@@ -20,7 +20,7 @@ export default class SLController {
     if (!name) {
       name = Buffer.from(url).toString('base64');
     }
-    
+
     let shortLink;
     if (customDomain) {
       shortLink = `${customDomain}/${name}`
@@ -31,7 +31,7 @@ export default class SLController {
     const sl = await SL.create({ userId, name, url, shortLink, isCustom: !!customDomain });
 
     // Save to cache
-    await Cache.set(`sl_${shortLink}`, sl.url, 60 * 60 * 30); // expires in 30 mins
+    await Cache.set(`sl_${shortLink}`, sl.url, 60 * 1); // expires in 1 min
 
     res.status(200).json({
       status: 'success',
@@ -146,7 +146,7 @@ export default class SLController {
     sl.visits += 1;
     await sl.save();
 
-    await Cache.set(`sl_${shortLink}`, sl.url, 60 * 60 * 30); // expires in 30 mins
+    await Cache.set(`sl_${shortLink}`, sl.url, 60 * 1); // expires in 1 min
     res.redirect(sl.url);
   });
 
@@ -156,21 +156,11 @@ export default class SLController {
     const slNames = await SL.find({ userId }).select('name');
     const slNamesArr = slNames.map(sl => sl.name);
 
-    // Get total visits
-    const totalVisits = await Location.aggregate([
-      { $match: { slName: { $in: slNamesArr } } },
-      { $group: { _id: null, total: { $sum: "$visits" } } }
-    ]);
-
-    // Group locations by slName, include location data
-    const visits = await Location.aggregate([
-      { $match: { slName: { $in: slNamesArr } } },
-      { $group: { _id: "$slName", total: { $sum: "$visits" }, locations: { $push: "$$ROOT" } } }
-    ]);
+    const visits = [], total = 0;
 
     return res.status(200).json({
       status: 'success',
-      totalVisits: totalVisits[0]?.total || 0,
+      total,
       visits
     });
   });
@@ -179,22 +169,51 @@ export default class SLController {
     const userId = req.user._id;
     const { name: slName } = req.params;
 
-    // Get total visits
-    const totalVisits = await Location.aggregate([
-      { $match: { userId, slName } },
-      { $group: { _id: null, total: { $sum: "$visits" } } }
-    ]);
+    // Check if slName exists
+    const sl = await SL.findOne({ userId, name: slName });
+    if (!sl) {
+      throw new AppError('Link not found', 404);
+    }
 
-    // Group by slName
-    const visits = await Location.aggregate([
-      { $match: { userId, slName } },
-      { $group: { _id: "$slName", total: { $sum: "$visits" } } }
+    const activities = await Location.aggregate([
+      { $match: { slName } },
+      {
+        $group: {
+          _id: {
+            ip: "$ip",
+            date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }
+          },
+          visits: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id.ip",
+          timeline: {
+            $push: {
+              date: "$_id.date",
+              visits: "$visits"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          ip: "$_id",
+          timeline: 1
+        }
+      },
+      {
+        $sort: {
+          "timeline.date": 1
+        }
+      }
     ]);
 
     return res.status(200).json({
       status: 'success',
-      totalVisits: totalVisits[0]?.total || 0,
-      visits
+      activities
     });
   });
 
@@ -205,12 +224,6 @@ export default class SLController {
 
   private static _visit = async (slName: string, req: Request) => {
     const ip = req.ip, browser = req.headers['user-agent'];
-    const location = await Location.findOne({ slName, ip, browser });
-    if (!location) {
-      await Location.create({ slName, ip, browser });
-    } else {
-      location.visits += 1;
-      await location.save();
-    }
+    await Location.create({ slName, ip, browser });
   }
 }

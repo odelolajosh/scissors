@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { checkNameUniquenessStub } from "./_mock";
 import { DEMO } from "@/utils/env";
 import { GetNameUniquenessResponse, SL } from "../types";
-import { MutationConfig, QueryConfig, queryClient } from "@/lib/react-query";
+import { ExtractFnReturnType, MutationConfig, QueryConfig, queryClient } from "@/lib/react-query";
 
 
 const checkNameUniqueness = async (name?: string): Promise<GetNameUniquenessResponse> => {
@@ -15,24 +15,20 @@ const checkNameUniqueness = async (name?: string): Promise<GetNameUniquenessResp
   return response;
 }
 
-type QueryFnType = typeof checkNameUniqueness;
+type CheckNameQueryFnType = typeof checkNameUniqueness;
 
 type UseUniqueNameOptions = {
-  config?: QueryConfig<QueryFnType>;
+  config?: QueryConfig<CheckNameQueryFnType>;
   name?: string;
 };
 
 export const useUniqueNameQuery = ({ config, name }: UseUniqueNameOptions) =>{
-  return useQuery(
-    ["uniqueName", name],
-    () => checkNameUniqueness(name),
-    {
-      enabled: !!name && name.length > 0,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    }
-  )
+  return useQuery<ExtractFnReturnType<CheckNameQueryFnType>>({
+    ...config,
+    enabled: !!name && name.length > 0,
+    queryKey: ["uniqueName", name],
+    queryFn: () => checkNameUniqueness(name)
+  })
 }
 
 export type CreateSlDTO = {

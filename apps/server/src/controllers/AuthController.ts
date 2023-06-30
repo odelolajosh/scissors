@@ -17,7 +17,7 @@ export default class AuthController {
     if (user) throw new AppError('An account with this mail already exist');
 
     const code = Math.floor(Math.random() * 9000) + 1000;
-    await Cache.set(`verify_${code}`, email, 60 * 60);
+    await Cache.set(`verify_${code}`, email, 60 * 10);
     MailService.sendVerifyToken(email, code.toString());
     res.status(200).send({ status: 'success' });
   });

@@ -20,6 +20,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (_req, res) => {
+  res.send('Hello world!');
+});
+
 app.get('/ping', (_req, res) => {
   res.send('pong');
 });

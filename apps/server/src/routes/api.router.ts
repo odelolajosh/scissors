@@ -3,6 +3,7 @@ import AuthController from '../controllers/AuthController';
 import SLController from '../controllers/SLController';
 import UserController from '../controllers/UserController';
 import { requireAccess, requireRefresh } from '../middlewares/auth';
+import { getEnv } from '../utils/config';
 
 const router = express.Router();
 
@@ -24,5 +25,13 @@ router.get('/stats', requireAccess, SLController.getStats);
 router.get('/stats/:name', requireAccess, SLController.getOneStat);
 
 router.get('/me', requireAccess, UserController.me);
+
+router.get('/docs', (req, res) => {
+  const docsUrl = getEnv('DOCS_URL');
+  if (!docsUrl) {
+    return res.send("Well, check back later 😅")
+  }
+  return res.redirect(docsUrl)
+})
 
 export default router;

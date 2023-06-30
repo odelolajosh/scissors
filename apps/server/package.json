@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "nodemon --exec ts-node server.ts",
-    "start": "tsc && node build/server.js",
+    "start": "node build/server.js",
     "build": "tsc",
     "test": "cross-env NODE_ENV=test mocha --require ts-node/register src/tests/**/*.spec.ts",
     "lint": "eslint --ext .ts src/",

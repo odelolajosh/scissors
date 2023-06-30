@@ -42,8 +42,6 @@ export const SLStat: React.FC<StatProps> = ({ name }) => {
   const statQuery = useStat({ name })
   const user = useUser();
 
-  console.log(statQuery.data)
-
   const labels = useMemo(() => {
     const creationDate = moment(user.data?.createdAt);
 

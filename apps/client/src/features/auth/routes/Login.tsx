@@ -18,8 +18,6 @@ export default function Login() {
     });
   };
 
-  console.log(login.error);
-
   return (
     <main>
       <Navbar />

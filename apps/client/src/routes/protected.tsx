@@ -6,7 +6,7 @@ import { PropsWithChildren, Suspense } from "react"
 import { lazyImport } from "@/utils/lazyImport"
 
 const { Home } = lazyImport(() => import('@/features/sl'), 'Home')
-const { SL } = lazyImport(() => import('@/features/sl'), 'SL')
+const { SLPage } = lazyImport(() => import('@/features/sl'), 'SLPage')
 
 
 const Protected: React.FC<PropsWithChildren> = ({ children }) => {
@@ -48,7 +48,7 @@ export const protectedRoutes = [
     element: <Protected><App /></Protected>,
     children: [
       { path: '', element: <Home /> },
-      { path: ':name', element: <SL /> }
+      { path: ':name', element: <SLPage /> }
     ]
   }
 ]

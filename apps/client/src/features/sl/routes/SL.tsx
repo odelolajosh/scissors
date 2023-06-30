@@ -9,7 +9,7 @@ import { SLStat } from "../components"
 import { useQr } from "../api/getQr"
 
 
-export const SL = () => {
+export const SLPage = () => {
   // Get SL name from params
   const { name } = useParams()
   const query = useSL({ name })

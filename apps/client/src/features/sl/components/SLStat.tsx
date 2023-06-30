@@ -108,7 +108,15 @@ export const SLStat: React.FC<StatProps> = ({ name }) => {
   return (
     <>
       <Transition
-        show={statQuery.isSuccess}
+        show={statQuery.isSuccess && statQuery.data?.activities?.length === 0}
+        {...transitionProps}
+      >
+        <div>
+          <h2>No activity yet</h2>
+        </div>
+      </Transition>
+      <Transition
+        show={statQuery.isSuccess && statQuery.data?.activities?.length > 0}
         {...transitionProps}
       >
         {data && <Line data={data} options={options} />}
